@@ -1,53 +1,86 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <script src="game_of_life.js"></script>
   <title>Hello, World!</title>
   <style>
-    /* Define the box styling */
-    .box {
-      width: 20px;
-      height: 20px;
-      display: inline-block;
-      border: 1px solid black;
-    }
-    /* Define the red box styling */
-    .box.red {
-      background-color: red;
-    }
+	/* Define the box styling */
+	.box {
+	  width: 20px;
+	  height: 20px;
+	  display: inline-block;
+	  border: 0px solid black;
+	  margin-right: 5px;
+	}
+
+	/* Define the red box styling */
+	.box.red {
+	  background-color: rgb(66, 165, 66);
+	}
+	input[type=number] {
+		border: none;
+		outline: none;
+		width: 24pt;
+	}
   </style>
 </head>
 <body>
-	<h1>Hello, World!</h1>
-	<p>Welcome to my first HTML page.</p>
-	<div id="grid"></div>
-	<script>
-	// make a array of length 20
-	var myArray = new Array(20);
-	// for each item in the array fill it with an empty array of 20
-	for (var i = 0; i < myArray.length; i++) {
-		myArray[i] = new Array(20);
+  <h1>Hello, World!</h1>
+  <p>Welcome to my first HTML page.</p>
+  <input type="range" min="10" max="1000" step="10" value="160" oninput="setRefreshRate(this.value)">
+  <br>
+  <label>
+	Density:
+	<input id="density-input" type="number" min="0" max="100" step="1" value="50" oninput="setDensity(this.value)">
+	<span>%</span>
+  </label>
+  <br>
+  <button id="play-pause" onclick="pauseGame()">Play/Pause</button>
+  <div id="grid"></div>
+
+  <script>
+	// call a class for the game of life grid with a setup function and a randomize function
+	let density;
+	let refreshRate = 160;
+	let stop = -1;
+	const gol = new GameOfLifeGrid();
+
+	function setRefreshRate(value) {
+	  refreshRate = value;
 	}
-	// console log the array
-	console.log(myArray);
+	
+	function setDensity(value) {
+		density = value;
+	}
 
-	// Get the grid element
-	var grid = document.getElementById('grid');
 
-	// Loop through the array and create a box for each item
-	for (var i = 0; i < myArray.length; i++) {
-		for (var j = 0; j < myArray[i].length; j++) {
-			// Create a new box element
-			var box = document.createElement('div');
-			// Set the box class to "box"
-			box.className = 'box';
-			// Set the box background color to red if the value is 0, white otherwise
-			box.className += myArray[i][j] === 0 ? ' red' : '';
-			// Add the box to the grid
-			grid.appendChild(box);
+	// call the update function every refreshRate milliseconds until stop is true
+	function gameLoop() {
+		if (!stop) {
+			gol.update();
+			setTimeout(gameLoop, 1000-refreshRate);
 		}
-		// Add a line break after each row
-		grid.appendChild(document.createElement('br'));
 	}
-	</script>
+
+	function pauseGame() {
+		if (stop == -1) {
+			// Initial frame:
+			gol.randomizeArray(density);
+			gol.draw();
+			// Disable button:
+			var densInp = document.getElementById("density-input");
+			densInp.disabled = true;
+			// Normal game loop
+			setTimeout(gameLoop, 1000-refreshRate);
+			stop = !stop;
+		}
+		else {
+			stop = !stop;
+			if (!stop) {
+				gameloop();
+			}
+		}
+	}
+</script>
 </body>
 </html>
