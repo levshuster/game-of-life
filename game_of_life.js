@@ -4,6 +4,10 @@ const DEAD = 0;
 // make a class for the game of life grid with a setup function
 class GameOfLifeGrid {
 	constructor(x = 50, y = 30) {
+		this.makeArray(x, y);
+	}
+
+	makeArray(x = 50, y = 30) {
 		this.grid = new Array(y);
 		// for each item in the array fill it with an empty array of 20 and randomly assign 0 or 1
 		for (var i = 0; i < this.grid.length; i++) {

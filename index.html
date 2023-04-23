@@ -2,7 +2,7 @@
 <html>
 <head>
   <script src="game_of_life.js"></script>
-  <title>Hello, World!</title>
+  <title>Lev and Sam's Game of Life</title>
   <style>
 	/* Define the box styling */
 	.box {
@@ -25,9 +25,20 @@
   </style>
 </head>
 <body>
-  <h1>Hello, World!</h1>
-  <p>Welcome to my first HTML page.</p>
+  <h1>Game of Life</h1>
+  <p>By Lev and Sam, originally designed by John Conway</p>
+  
   <input type="range" min="10" max="1000" step="10" value="160" oninput="setRefreshRate(this.value)">
+  <br>
+  <label>
+	Number of Rows:
+	<input id="row-input" type="number" min="1"  step="1" value="50" oninput="setRows(this.value)">
+  </label>
+  <br>
+  <label>
+	Number of Columns:
+	<input id="column-input" type="number" min="1" step="1" value="50" oninput="setColumns(this.value)">
+  </label>
   <br>
   <label>
 	Density:
@@ -36,6 +47,8 @@
   </label>
   <br>
   <button id="play-pause" onclick="pauseGame()">Play/Pause</button>
+  <button onclick="location.reload()">Reload</button>
+
   <div id="grid"></div>
 
   <script>
@@ -43,7 +56,17 @@
 	let density;
 	let refreshRate = 160;
 	let stop = -1;
-	const gol = new GameOfLifeGrid();
+	var x = 50;
+	var y = 30;
+	const gol = new GameOfLifeGrid(x, y);
+	
+	function setColumns(value){
+		x = value;
+	}
+	
+	function setRows(value){
+		y = value;
+	}
 
 	function setRefreshRate(value) {
 	  refreshRate = value;
@@ -64,21 +87,23 @@
 
 	function pauseGame() {
 		if (stop == -1) {
+			let x = parseInt(document.getElementById("row-input").value);
+			let y = parseInt(document.getElementById("column-input").value);
+			gol.makeArray(x, y);
 			// Initial frame:
 			gol.randomizeArray(density);
 			gol.draw();
-			// Disable button:
-			var densInp = document.getElementById("density-input");
-			densInp.disabled = true;
+			// Disable inputss:
+			document.getElementById("row-input").disabled = true;
+			document.getElementById("column-input").disabled = true;
+			document.getElementById("density-input").disabled = true;
 			// Normal game loop
 			setTimeout(gameLoop, 1000-refreshRate);
 			stop = !stop;
 		}
 		else {
 			stop = !stop;
-			if (!stop) {
-				gameloop();
-			}
+			if (!stop) gameloop();
 		}
 	}
 </script>
