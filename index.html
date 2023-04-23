@@ -2,9 +2,52 @@
 <html>
 <head>
   <title>Hello, World!</title>
+  <style>
+    /* Define the box styling */
+    .box {
+      width: 20px;
+      height: 20px;
+      display: inline-block;
+      border: 1px solid black;
+    }
+    /* Define the red box styling */
+    .box.red {
+      background-color: red;
+    }
+  </style>
 </head>
 <body>
-  <h1>Hello, World!</h1>>
-  <p>Welcome to my first HTML page.</p>
+	<h1>Hello, World!</h1>
+	<p>Welcome to my first HTML page.</p>
+	<div id="grid"></div>
+	<script>
+	// make a array of length 20
+	var myArray = new Array(20);
+	// for each item in the array fill it with an empty array of 20
+	for (var i = 0; i < myArray.length; i++) {
+		myArray[i] = new Array(20);
+	}
+	// console log the array
+	console.log(myArray);
+
+	// Get the grid element
+	var grid = document.getElementById('grid');
+
+	// Loop through the array and create a box for each item
+	for (var i = 0; i < myArray.length; i++) {
+		for (var j = 0; j < myArray[i].length; j++) {
+			// Create a new box element
+			var box = document.createElement('div');
+			// Set the box class to "box"
+			box.className = 'box';
+			// Set the box background color to red if the value is 0, white otherwise
+			box.className += myArray[i][j] === 0 ? ' red' : '';
+			// Add the box to the grid
+			grid.appendChild(box);
+		}
+		// Add a line break after each row
+		grid.appendChild(document.createElement('br'));
+	}
+	</script>
 </body>
 </html>
