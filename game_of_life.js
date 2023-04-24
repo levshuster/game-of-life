@@ -10,8 +10,12 @@ class GameOfLifeGrid {
 	makeArray(x = 50, y = 30) {
 		this.grid = new Array(y);
 		// for each item in the array fill it with an empty array of 20 and randomly assign 0 or 1
-		for (var i = 0; i < this.grid.length; i++) {
+		for (let i = 0; i < this.grid.length; i++) {
 			this.grid[i] = new Array(x);
+		}
+		this.colorArray = new Array(y);
+		for (let i = 0; i < this.colorArray.length; i++) {
+			this.colorArray[i] = new Array(x);
 		}
 	}
 
@@ -24,7 +28,11 @@ class GameOfLifeGrid {
 
 			}
 		}
-		return this
+		for (var i = 0; i < this.colorArray.length; i = i+2) {
+			for (var j = 0; j < this.colorArray[i].length; j = j+2) {
+				this.colorArray[i][j] = Math.floor(Math.random() * 6);
+			}
+		}
 	}
 
 	countNeighbors(x, y, grid = this.grid) {
@@ -42,6 +50,31 @@ class GameOfLifeGrid {
 		return neighbors;
 	}
 
+	colorFromNeighbor(x, y, start = false) {
+		if (this.colorArray[y][x] !== undefined && start == true) {
+			return this.colorArray[y][x];
+		}
+		var neighborColor = '';
+
+		for (var i = -1; i < 2; i++) {
+			for (var j = -1; j < 2; j++) {
+				// if the neighbor is alive and not the cell itself
+				if ((y+i < 0 || x+j < 0) || y+i >= this.grid.length || x+j >= this.grid[0].length);
+				else if (this.grid[y + i][x + j] == 1 && !(i == 0 && j == 0)) {
+					if ((this.colorArray[y + i][x + j] != undefined) && (this.grid[y+i][x+j] == ALIVE)){
+						neighborColor = this.colorArray[y + i][x + j];
+					}
+				}
+			}
+		}
+		if (!neighborColor) {
+			this.colorArray[y][x] = Math.floor(Math.random() * 6);
+		} else {
+			this.colorArray[y][x] = neighborColor;
+		}
+		return this.colorArray[y][x];
+	}
+
 	update() { 
 		// clone self
 		const old_grid = this.grid.map(function(arr) {
@@ -57,7 +90,7 @@ class GameOfLifeGrid {
 		this.draw();
 	}
 
-	draw() {
+	draw(start = false) {
 		// Get the grid element
 		var grid = document.getElementById('grid');
 		
@@ -74,7 +107,7 @@ class GameOfLifeGrid {
 				// Set the box class to "box"
 				box.className = 'box';
 				// Set the box background color to red if the value is 0, white otherwise
-				box.className += this.grid[i][j] === 1 ? ' red' : '';
+				box.className += this.grid[i][j] === 1 ? [' red', ' orange', ' yellow', ' green', ' blue', ' purple'][this.colorFromNeighbor(i,j, start)] : '';
 				// Add the box to the grid
 				grid.appendChild(box);
 			}

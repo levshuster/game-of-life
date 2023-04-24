@@ -15,7 +15,25 @@
 
 	/* Define the red box styling */
 	.box.red {
+	  background-color: rgb(199, 81, 77);
+	}
+	.box.orange {
+	  background-color: rgb(255, 152, 0);
+	}
+	.box.yellow {
+	  background-color: rgb(255, 235, 59);
+	}
+	.box.green {
 	  background-color: rgb(66, 165, 66);
+	}
+	.box.blue {
+	  background-color: rgb(68, 118, 168);
+	}
+	.box.purple {
+	  background-color: rgb(156, 39, 176);
+	}
+	.box.white {
+		background-color: rgb(255, 255, 255)
 	}
 	input[type=number] {
 		border: none;
@@ -92,7 +110,7 @@
 			gol.makeArray(x, y);
 			// Initial frame:
 			gol.randomizeArray(density);
-			gol.draw();
+			gol.draw(true);
 			// Disable inputss:
 			document.getElementById("row-input").disabled = true;
 			document.getElementById("column-input").disabled = true;
