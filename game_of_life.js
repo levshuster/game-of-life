@@ -123,7 +123,8 @@ class GameOfLifeGrid {
 				grid.appendChild(box);
 			}
 			// Add a line break after each row
-			grid.appendChild(document.createElement('br'));
+			var br = document.createElement('br');
+			grid.appendChild(br);
 		}
 	}
 
