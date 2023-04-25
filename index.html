@@ -87,7 +87,7 @@
 	}
 
 	function setRefreshRate(value) {
-	  refreshRate = value;
+		refreshRate = value;
 	}
 	
 	function setDensity(value) {
@@ -110,7 +110,7 @@
 			gol.makeArray(x, y);
 			// Initial frame:
 			gol.randomizeArray(density);
-			gol.draw(true);
+			gol.draw();
 			// Disable inputss:
 			document.getElementById("row-input").disabled = true;
 			document.getElementById("column-input").disabled = true;
