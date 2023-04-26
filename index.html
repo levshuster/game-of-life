@@ -65,7 +65,7 @@
   </label>
   <br>
   <button id="play-pause" onclick="pauseGame()">Play/Pause</button>
-  <button onclick="location.reload()">Reload</button>
+  <button onclick="resetGrid()">Reset</button>
 
   <div id="grid"></div>
 
@@ -74,9 +74,21 @@
 	let density;
 	let refreshRate = 160;
 	let stop = -1;
+	let drawn = 1;
 	var x = 50;
 	var y = 30;
 	const gol = new GameOfLifeGrid(x, y);
+
+	function resetGrid() {
+		var grid = document.getElementById('grid');
+		while (grid.firstChild) grid.removeChild(grid.firstChild);
+
+		stop = -1;
+		document.getElementById("row-input").disabled = false;
+		document.getElementById("column-input").disabled = false;
+		document.getElementById("density-input").disabled = false;
+		// location.reload();
+	}
 	
 	function setColumns(value){
 		x = value;
@@ -97,7 +109,7 @@
 
 	// call the update function every refreshRate milliseconds until stop is true
 	function gameLoop() {
-		if (!stop) {
+		if (!stop && stop != -1) {
 			gol.update();
 			setTimeout(gameLoop, 1000-refreshRate);
 		}
