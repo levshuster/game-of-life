@@ -7,11 +7,19 @@ class GameOfLifeGrid {
 		this.makeArray(x, y);
 	}
 
-	makeArray(x = 50, y = 30) {
+	makeArray(x, y) {
 		this.grid = new Array(y);
 		// for each item in the array fill it with an empty array of 20 and randomly assign 0 or 1
-		for (var i = 0; i < this.grid.length; i++) {
+		for (let i = 0; i < this.grid.length; i++) {
 			this.grid[i] = new Array(x);
+		}
+		this.colorArray = new Array(y);
+		for (let i = 0; i < this.colorArray.length; i++) {
+			this.colorArray[i] = new Array(x);
+		}
+		this.needsUpdate = new Array(y);
+		for (let i = 0; i < this.needsUpdate.length; i++) {
+			this.needsUpdate[i] = new Array(x);
 		}
 	}
 
@@ -21,10 +29,18 @@ class GameOfLifeGrid {
 				if (Math.random() < density_out_of_100/100) {
 					this.grid[i][j] = ALIVE;
 				}
-
 			}
 		}
-		return this
+		for (var i = 0; i < this.colorArray.length; i = i+2) {
+			for (var j = 0; j < this.colorArray[i].length; j = j+2) {
+				this.colorArray[i][j] = Math.floor(Math.random() * 6);
+			}
+		}
+		for (var i = 0; i < this.needsUpdate.length; i = i+2) {
+			for (var j = 0; j < this.needsUpdate[i].length; j = j+2) {
+				this.colorArray[i][j] = 0;
+			}
+		}
 	}
 
 	countNeighbors(x, y, grid = this.grid) {
@@ -41,6 +57,27 @@ class GameOfLifeGrid {
 		}
 		return neighbors;
 	}
+	// Updates te color in this.colorArray, and returns the color
+	colorFromNeighbor(y,x) {
+		var neighborColor;
+		for (var i = -1; i < 2; i++) {
+			for (var j = -1; j < 2; j++) {
+				// if the neighbor is alive and not the cell itself
+				if ((y+i < 0 || x+j < 0) || y+i >= this.grid.length || x+j >= this.grid[0].length);
+				else if (this.grid[y + i][x + j] == 1 && !(i == 0 && j == 0)) {
+					if ((this.colorArray[y + i][x + j] != undefined) && (this.grid[y+i][x+j] == ALIVE)){
+						neighborColor = this.colorArray[y + i][x + j];
+					}
+				}
+			}
+		}
+		if (neighborColor == undefined) {
+			this.colorArray[y][x] = Math.floor(Math.random() * 6);
+		} else {
+			this.colorArray[y][x] = neighborColor;
+		}
+		return this.colorArray[y][x];
+	}
 
 	update() { 
 		// clone self
@@ -50,7 +87,7 @@ class GameOfLifeGrid {
 		
 		for (var i = 0; i < this.grid.length; i++) {
 			for (var j = 0; j < this.grid[i].length; j++) {
-				this.grid[i][j] = this.updateCell(this.grid[i][j], this.countNeighbors(j, i, old_grid));
+				this.grid[i][j] = this.updateCell([i,j], this.countNeighbors(j, i, old_grid));
 			}
 		}
 
@@ -73,23 +110,43 @@ class GameOfLifeGrid {
 				var box = document.createElement('div');
 				// Set the box class to "box"
 				box.className = 'box';
-				// Set the box background color to red if the value is 0, white otherwise
-				box.className += this.grid[i][j] === 1 ? ' red' : '';
+				// if it needs an update, then grab color from neighbor
+				if (this.needsUpdate[i][j] == 1) {
+					box.className += this.grid[i][j] === 1 ? [' red', ' orange', ' yellow', ' green', ' blue', ' purple'][this.colorFromNeighbor(i,j)] : '';
+				} else if (this.colorArray[i][j]){
+					box.className += this.grid[i][j] === 1 ? [' red', ' orange', ' yellow', ' green', ' blue', ' purple'][this.colorArray[i][j]] : '';
+				} else {
+					this.colorArray[i][j] = Math.floor(Math.random() * 6);
+					box.className += this.grid[i][j] === 1 ? [' red', ' orange', ' yellow', ' green', ' blue', ' purple'][this.colorArray[i][j]] : '';
+				}
 				// Add the box to the grid
 				grid.appendChild(box);
 			}
 			// Add a line break after each row
-			grid.appendChild(document.createElement('br'));
+			var br = document.createElement('br');
+			grid.appendChild(br);
 		}
 	}
 
 	updateCell(cell, numNeighbors){
-		// write a match statement for less than two, more than three, and two or three
+		let i = cell[0]; let j = cell[1];
 		switch (numNeighbors) {
-			case 0 | 1: return DEAD;
-			case 2: return cell;
-			case 3: return ALIVE;
-			default: return DEAD;
+			case 0 | 1: {
+				this.needsUpdate[i][j] = true;
+				return DEAD;
+			}
+			case 2: { 
+				this.needsUpdate[i][j] = ((this.grid[i][j] && !1) || (!this.grid[i][j] && 1));
+				return this.grid[i][j];
+			}
+			case 3: {
+				this.needsUpdate[i][j] = ((this.grid[i][j] && !1) || (!this.grid[i][j] && 1));
+				return ALIVE;
+			}
+			default: {
+				this.needsUpdate[i][j] = true;
+				return DEAD;
+			}
 		}
 	}
 }
